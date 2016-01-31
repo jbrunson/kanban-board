@@ -12,12 +12,21 @@ class Repos extends Component {
 
   componentDidMount() {
     fetch('https:api.github.com/users/pro-react/repos')
-    .then((response) => response.json())
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        throw new Error("server response not ok");
+      }
+    })
     .then((responseData) => {
       this.setState({repositories: responseData});
+    })
+    .catch((error) => {
+      this.props.history.pushState(null, '/error');
     });
   }
-
+  
   render() {
     let repos = this.state.repositories.map((repo) => (
       <li key={repo.id}>
