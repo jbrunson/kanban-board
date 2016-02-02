@@ -5,10 +5,13 @@ import { Router, Route, Link, IndexRoute, IndexLink } from 'react-router';
 import createBrowserHistory from 'history/lib/createBrowserHistory';
 
 import KanbanBoardContainer from '../KanbanBoardContainer';
+import KanbanBoard from '../KanbanBoard';
 import About from '../About';
 import Repos from '../Repos';
 import RepoDetails from '../RepoDetails';
 import ServerError from '../ServerError';
+import EditCard from '../EditCard';
+import NewCard from '../NewCard';
 
 class App extends Component {
   render() {
@@ -28,16 +31,27 @@ class App extends Component {
   }
 }
 
-render(
-  (
-    <Router history={createBrowserHistory()}>
-      <Route path="/" component={App}>
-        <IndexRoute component={KanbanBoardContainer} />
-        <Route path="about" component={About} />
-        <Route path="repos" component={Repos}>
-          <Route path="/repo/:repo_name" component={RepoDetails} />
-        </Route>
-        <Route path="error" component={ServerError} />
+render((
+  <Router history={createBrowserHistory()}>
+    <Route component={KanbanBoardContainer}>
+      <Route path="/" component={KanbanBoard}>
+        <Route path="new" component={NewCard} />
+        <Route path="edit/:card_id" component={EditCard} />
       </Route>
-    </Router>
-  ), document.getElementById('root'));
+    </Route>
+  </Router>
+), document.getElementById('root'));
+
+// render(
+//   (
+//     <Router history={createBrowserHistory()}>
+//       <Route path="/" component={App}>
+//         <IndexRoute component={KanbanBoardContainer} />
+//         <Route path="about" component={About} title="About Us" />
+//         <Route path="repos" component={Repos}>
+//           <Route path="/repo/:repo_name" component={RepoDetails} />
+//         </Route>
+//         <Route path="error" component={ServerError} />
+//       </Route>
+//     </Router>
+//   ), document.getElementById('root'));
