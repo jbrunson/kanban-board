@@ -9,7 +9,7 @@ class CheckList extends Component {
   }
 
   render() {
-    let tasks = this.props.tasks.map((task, taskIndex) => {
+    let tasks = this.props.tasks.map((task, taskIndex) => (
       <li key={task.id} className="checklist__task">
         <input type="checkbox" checked={task.done} onChange={
           this.props.taskCallbacks.toggle.bind(null, this.props.cardId, task.id, taskIndex)
@@ -19,7 +19,7 @@ class CheckList extends Component {
           this.props.taskCallbacks.delete.bind(null, this.props.cardId, task.id, taskIndex)
         } />
       </li>
-    });
+    ));
 
     return (
       <div className="checklist">

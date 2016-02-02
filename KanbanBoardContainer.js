@@ -68,10 +68,11 @@ class KanbanBoardContainer extends Component {
 
   updateCard(card) {
     let prevState = this.state;
-    let cardIndex = this.state.cards.findIndex((c) => c.id = card.id);
+    let cardIndex = this.state.cards.findIndex((c) => c.id == card.id);
     let nextState = update(this.state.cards, {
       [cardIndex]: { $set: card }
     });
+    this.setState({cards: nextState});
 
     fetch(`${API_URL}/cards/${card.id}`, {
       method: 'put',
@@ -89,66 +90,79 @@ class KanbanBoardContainer extends Component {
     })
   }
 
-  addTask(cardId, taskName) {
+   addTask(cardId, taskName){
+    // Keep a reference to the original state prior to the mutations
+    // in case you need to revert the optimistic changes in the UI
     let prevState = this.state;
-    let cardIndex = this.state.cards.findIndex((card) => card.id == cardId);
-    //create temp Id
-    let newTask = { id: Date.now(), name: taskName, done: false };
-    //create a new object and push the new task to the array of tasks
-    let nextState = update(this.state.cards, {
-      [cardIndex]: {
-        tasks: { $push: [newTask] }
-      }
-    });
-    this.setState({cards: nextState});
 
+    // Find the index of the card
+    let cardIndex = this.state.cards.findIndex((card)=>card.id == cardId);
+
+    // Create a new task with the given name and a temporary ID
+    let newTask = {id:Date.now(), name:taskName, done:false};
+    // Create a new object and push the new task to the array of tasks
+    let nextState = update(this.state.cards, {
+                      [cardIndex]: {
+                        tasks: {$push: [newTask] }
+                      }
+                    });
+
+    // set the component state to the mutated object
+    this.setState({cards:nextState});
+
+    // Call the API to add the task on the server
     fetch(`${API_URL}/cards/${cardId}/tasks`, {
       method: 'post',
       headers: API_HEADERS,
       body: JSON.stringify(newTask)
     })
     .then((response) => {
-      if (response.ok) {
+      if(response.ok){
         return response.json()
       } else {
-        throw new Error("Server response not ok")
+        // Throw an error if server response wasn’t ’ok’
+        // so you can revert back the optimistic changes
+        // made to the UI.
+        throw new Error("Server response wasn’t OK")
       }
     })
     .then((responseData) => {
-      newTask.id = responseData.id
-      this.setState({cards: nextState});
+      // When the server returns the definitive ID
+      // used for the new Task on the server, update it on React
+      newTask.id=responseData.id
+      this.setState({cards:nextState});
     })
     .catch((error) => {
       this.setState(prevState);
     });
   }
 
-  deleteTask(cardId, taskId, taskIndex) {
+  deleteTask(cardId, taskId, taskIndex){
+    let cardIndex = this.state.cards.findIndex((card)=>card.id == cardId);
     let prevState = this.state;
-    //find original index of the card
-    let cardIndex = this.state.cards.findIndex((card) => card.id == cardId);
-    //Create new object without the task
-    let nextState = update(this.state.cards, {
-      [cardIndex]: {
-        tasks: { 
-          $splice: [[taskindex, 1]]
-        }
-      }
-    });
-    //Set the component state to the mutated object
-    this.setState({cards: nextState});
 
+    // Create a new object without the task
+    let nextState = update(this.state.cards, {
+                      [cardIndex]: {
+                        tasks: {$splice: [[taskIndex,1]] }
+                      }
+                    });
+
+    // set the component state to the mutated object
+    this.setState({cards:nextState});
+
+    // Call the API to remove the task on the server
     fetch(`${API_URL}/cards/${cardId}/tasks/${taskId}`, {
       method: 'delete',
       headers: API_HEADERS
     })
     .then((response) => {
-      if (!response.ok) {
-        throw new Error("Server response not ok")
+      if(!response.ok){
+        throw new Error("Server response wasn’t OK")
       }
     })
     .catch((error) => {
-      console.error("Fetch error", error)
+      console.error("Fetch error:",error)
       this.setState(prevState);
     });
   }
