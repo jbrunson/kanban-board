@@ -4,14 +4,14 @@ import { render } from 'react-dom';
 import { Router, Route, Link, IndexRoute, IndexLink } from 'react-router';
 import createBrowserHistory from 'history/lib/createBrowserHistory';
 
-import KanbanBoardContainer from '../KanbanBoardContainer';
-import KanbanBoard from '../KanbanBoard';
-import About from '../About';
-import Repos from '../Repos';
-import RepoDetails from '../RepoDetails';
-import ServerError from '../ServerError';
-import EditCard from '../EditCard';
-import NewCard from '../NewCard';
+import KanbanBoardContainer from './components/KanbanBoardContainer';
+import KanbanBoard from './components/KanbanBoard';
+import About from './components/About';
+import Repos from './components/Repos';
+import RepoDetails from './components/RepoDetails';
+import ServerError from './components/ServerError';
+import EditCard from './components/EditCard';
+import NewCard from './components/NewCard';
 
 class App extends Component {
   render() {
