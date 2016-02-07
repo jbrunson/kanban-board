@@ -6,6 +6,7 @@ import CheckList from './CheckList';
 import constants from '../constants';
 import { Link } from 'react-router';
 import CardActionCreators from '../actions/CardActionCreators';
+import shallowCompare from 'react-addons-shallow-compare';
 
 let titlePropType = (props, propName, componentName) => {
   if (props[propName]) {
@@ -34,7 +35,7 @@ const cardDropSpec = {
   hover(props, monitor) {
     const draggedId = monitor.getItem().id;
     if (props.id !== draggedId) {
-      CardActionCreators.updatePosition(draggedId, props.id);
+      CardActionCreators.updateCardPosition(draggedId, props.id);
     }
   }
 }
@@ -55,6 +56,12 @@ class Card extends Component {
 
   toggleDetails() {
     CardActionCreators.toggleCardDetails(this.props.id);
+  }
+  //Every time you change a card’s position or list, all the cards get rerendered.
+  //shouldComponentUpdate lifecycle method with the shallowCompare add-on
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return shallowCompare(this, nextProps, nextState)
   }
 
   render() {
